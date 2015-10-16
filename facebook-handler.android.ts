@@ -1,43 +1,64 @@
 //NativeScript modules
 import applicationModule = require("application");
 
-//File variables
-var AndroidApplication = applicationModule.android;
+var _isInit: boolean = false;
+var _AndroidApplication = applicationModule.android;
+var _act: android.app.Activity;
 
-export function FacebookLoginHandler(successCallback: any, cancelCallback: any, failCallback: any) {
-  //@todo Try to do it at the begginin of the APP instead
+var mCallbackManager;
+var loginManager;
+
+export function init(): boolean{
   //fb initialization
-  com.facebook.FacebookSdk.sdkInitialize(AndroidApplication.context.getApplicationContext());
+    com.facebook.FacebookSdk.sdkInitialize(_AndroidApplication.context.getApplicationContext());
+    mCallbackManager = com.facebook.CallbackManager.Factory.create();
+    loginManager = com.facebook.login.LoginManager.getInstance();
 
-  //fb objects
-  var mCallbackManager = com.facebook.CallbackManager.Factory.create();
-
-  var loginManager: com.facebook.login.LoginManager = com.facebook.login.LoginManager.getInstance();
-
-  loginManager.registerCallback(mCallbackManager, new com.facebook.FacebookCallback({
-
-    onSuccess: function(result) {
-      successCallback(result.getAccessToken().getToken());
-    },
-    onCancel: function() {
-      cancelCallback();
-
-    },
-    onError: function(e) {
-      failCallback(e);
+    if (mCallbackManager && loginManager) {
+    _isInit = true;
+    return true;
     }
+    else {
+    return false;
+    }
+}
 
-  }));
+export function registerCallback(successCallback: any, cancelCallback: any, failCallback: any) {
 
-  var act: android.app.Activity = AndroidApplication.startActivity ||
-    AndroidApplication.foregroundActivity;
+    if(_isInit){
+      var act = _AndroidApplication.foregroundActivity;
+      _act = act; 
 
-  //Overriding Activity onActivityResult method to send it to the callbackManager
-  act.onActivityResult = (requestCode: number, resultCode: number, data: android.content.Intent) => {
-      mCallbackManager.onActivityResult(requestCode, resultCode, data);
+      loginManager.registerCallback(mCallbackManager, new com.facebook.FacebookCallback({
+
+        onSuccess: function(result) {
+          successCallback(result);
+        },
+        onCancel: function() {
+          cancelCallback();
+
+        },
+        onError: function(e) {
+          failCallback(e);
+        }
+
+      }));
+
+      //Overriding Activity onActivityResult method to send it to the callbackManager
+      act.onActivityResult = (requestCode: number, resultCode: number, data: android.content.Intent) => {
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+      }
+    }
   }
 
-  //Start the login process
-  com.facebook.login.LoginManager.getInstance().logInWithPublishPermissions(act, java.util.Arrays.asList(["publish_actions"]));
+export function logInWithPublishPermissions(permissions: string[]) {
 
-}
+    if (_isInit) {
+      var javaPermissions = java.util.Arrays.asList(permissions);
+      //Start the login process
+      com.facebook.login.LoginManager.getInstance().logInWithPublishPermissions(_act, javaPermissions);
+    }
+  }
+
+ 
+

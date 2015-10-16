@@ -1,25 +1,47 @@
 var applicationModule = require("application");
-var AndroidApplication = applicationModule.android;
-function FacebookLoginHandler(successCallback, cancelCallback, failCallback) {
-    com.facebook.FacebookSdk.sdkInitialize(AndroidApplication.context.getApplicationContext());
-    var mCallbackManager = com.facebook.CallbackManager.Factory.create();
-    var loginManager = com.facebook.login.LoginManager.getInstance();
-    loginManager.registerCallback(mCallbackManager, new com.facebook.FacebookCallback({
-        onSuccess: function (result) {
-            successCallback(result.getAccessToken().getToken());
-        },
-        onCancel: function () {
-            cancelCallback();
-        },
-        onError: function (e) {
-            failCallback(e);
-        }
-    }));
-    var act = AndroidApplication.startActivity ||
-        AndroidApplication.foregroundActivity;
-    act.onActivityResult = function (requestCode, resultCode, data) {
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
-    };
-    com.facebook.login.LoginManager.getInstance().logInWithPublishPermissions(act, java.util.Arrays.asList(["publish_actions"]));
+var _isInit = false;
+var _AndroidApplication = applicationModule.android;
+var _act;
+var mCallbackManager;
+var loginManager;
+function init() {
+    com.facebook.FacebookSdk.sdkInitialize(_AndroidApplication.context.getApplicationContext());
+    mCallbackManager = com.facebook.CallbackManager.Factory.create();
+    loginManager= com.facebook.login.LoginManager.getInstance();
+    if (mCallbackManager && loginManager) {
+        _isInit = true;
+        return true;
+    }
+    else {
+        return false;
+    }
 }
-exports.FacebookLoginHandler = FacebookLoginHandler;
+exports.init = init;
+function registerCallback(successCallback, cancelCallback, failCallback) {
+    if (_isInit) {
+        var act = _AndroidApplication.foregroundActivity;
+        _act = act;
+        loginManager.registerCallback(mCallbackManager, new com.facebook.FacebookCallback({
+            onSuccess: function (result) {
+                successCallback(result);
+            },
+            onCancel: function () {
+                cancelCallback();
+            },
+            onError: function (e) {
+                failCallback(e);
+            }
+        }));
+        act.onActivityResult = function (requestCode, resultCode, data) {
+            mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        };
+    }
+}
+exports.registerCallback = registerCallback;
+function logInWithPublishPermissions(permissions) {
+    if (_isInit) {
+        var javaPermissions = java.util.Arrays.asList(permissions);
+        com.facebook.login.LoginManager.getInstance().logInWithPublishPermissions(_act, javaPermissions);
+    }
+}
+exports.logInWithPublishPermissions = logInWithPublishPermissions;
