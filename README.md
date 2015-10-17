@@ -62,7 +62,11 @@ Add to your AndroidManifest.xml (the one inside platforms/android/src/main) the 
 application android:label="@string/app_name" ...>
     ...
     <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
-    ...
+    <activity android:name="com.facebook.FacebookActivity"
+          android:configChanges=
+                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+          android:theme="@android:style/Theme.Translucent.NoTitleBar"
+          android:label="@string/app_name" />
 </application>
 ```
 ### Common to iOS and Android
