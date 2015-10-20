@@ -106,8 +106,12 @@ And finally you can start the login process like this
 
 ## Known issues
 
+### iOS login always return isCancelled == true  
+
 For iOS the switching between apps (yourAPP and safary or yourApp and fbApp) can cause that the result of the login process return always cancel.
 To solve that you can modify the sdk to try to log in first using the systemAccount if available and fall to Webview , that are the two login behaviours that works well.   
-You can also replace the class FBSDKLoginManager.m in platforms/ios/Pods/FBSDKLoginKit/FBSDKLoginKit/FBSDKLoginKit/.. with the one in issues/FBSDKLoginManager.m that is modified already
+You can also replace the class FBSDKLoginManager.m in platforms/ios/Pods/FBSDKLoginKit/FBSDKLoginKit/FBSDKLoginKit/.. with the one in issues/FBSDKLoginManager.m that is modified already. Then remove the plugin and add it again.
 
+### Xcode is not building my iOS platform
 
+After installing the plugin CocoaPods creates a .xcworkspace file, use this one to open the project in Xcode instead of the .xcodeproj.
