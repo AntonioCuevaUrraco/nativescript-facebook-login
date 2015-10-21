@@ -32,11 +32,35 @@ tns plugin add nativescript-facebook-login
 ### iOS
 For ios you need to add this to your app.ios to initialize the SDK
 ```ts
-applicationDidFinishLaunchingWithOptions(application: UIApplication, launchOptions: NSDictionary): boolean {
-    // Init Facebook SDK login
-    FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions);
-    return true;
+var application = require("application");
+
+class MyDelegate extends UIResponder implements UIApplicationDelegate {
+  public static ObjCProtocols = [UIApplicationDelegate];
+
+  applicationDidFinishLaunchingWithOptions(application: UIApplication, launchOptions: NSDictionary): boolean {
+   return FBSDKApplicationDelegate.sharedInstance().applicationDidFinishLaunchingWithOptions(application, launchOptions);
   }
+  
+  applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation) {
+    return FBSDKApplicationDelegate.sharedInstance().applicationOpenURLSourceApplicationAnnotation(application, url, sourceApplication, annotation);
+  }
+  
+  applicationDidBecomeActive(application: UIApplication): void {
+      FBSDKAppEvents.activateApp();
+  }
+
+  applicationWillTerminate(application: UIApplication): void {
+    //Do something you want here
+  }
+
+  applicationDidEnterBackground(application: UIApplication): void {
+    //Do something you want here
+  }
+}
+
+application.ios.delegate = MyDelegate;
+application.start();
+
 ```
 
 Add to your Info.plist(the one inside platforms/ios/yourApp) the Facebook App ID credentials 
@@ -104,14 +128,8 @@ And finally you can start the login process like this
   FacebookLoginHandler.logInWithPublishPermissions(["publish_actions"]);
 ```
 
-## Known issues
+## Frequently asked questions
 
-### iOS login always return isCancelled == true  
+### Why Xcode is not building my iOS platform?
 
-For iOS the switching between apps (yourAPP and safary or yourApp and fbApp) can cause that the result of the login process return always cancel.
-To solve that you can modify the sdk to try to log in first using the systemAccount if available and fall to Webview , that are the two login behaviours that works well.   
-You can also replace the class FBSDKLoginManager.m in platforms/ios/Pods/FBSDKLoginKit/FBSDKLoginKit/FBSDKLoginKit/.. with the one in issues/FBSDKLoginManager.m that is modified already. Then remove the plugin and add it again.
-
-### Xcode is not building my iOS platform
-
-After installing the plugin CocoaPods creates a .xcworkspace file, use this one to open the project in Xcode instead of the .xcodeproj.
+After installing the plugin CocoaPods creates a .xcworkspace file, use this one to open the project in Xcode instead of the .xcodeproj
