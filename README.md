@@ -79,6 +79,9 @@ Add to your Info.plist(the one inside platforms/ios/yourApp) the Facebook App ID
 <key>FacebookDisplayName</key>
 <string>{your-app-name}</string>
 ```
+For more information you can consult the official Facebook page for iOS
+https://developers.facebook.com/docs/ios
+
 ### Android
 Add to your AndroidManifest.xml (the one inside platforms/android/src/main) the Facebook App ID credentials
 ```xml
@@ -93,6 +96,13 @@ application android:label="@string/app_name" ...>
           android:label="@string/app_name" />
 </application>
 ```
+Add to your Strings (platforms>android>src>main>res>strings.xml) your facebook app id
+```xml
+<string name="facebook_app_id">your-app-id</string>
+```
+
+For more information you can consult the official Facebook page for Android
+https://developers.facebook.com/docs/android
 ### Common to iOS and Android
 
 Require the plugin whenever you want to use it
@@ -120,6 +130,7 @@ var failCallback = function() {
     alert("Unexpected error: Cannot get access token");
   }  
 ```
+
 And finally you can start the login process like this
 ```ts
   FacebookLoginHandler.init();
@@ -128,6 +139,26 @@ And finally you can start the login process like this
   FacebookLoginHandler.logInWithPublishPermissions(["publish_actions"]);
 ```
 
+## Known issues
+Sometimes the .aar library with the sdk for android don't get linked to the platform after installing the plugin. This end up in the error:    
+TypeError: Cannot read property 'FacebookSdk' of undefined
+File: "/data/data/com.ladeezfirstmedia.ThisOrThat/files/app/tns_modules/nativescript-facebook-login/facebook-handler.js line: 9 column:16   
+
+As a workarround for now till the cause is found you can add the facebook sdk dependency manually by changing the build.gradle (platforms/android/build.gradle) like so:
+```
+dependencies {
+	....
+        ....
+    compile "com.android.support:support-v4:$suppotVer"
+    compile "com.android.support:appcompat-v7:$suppotVer"
+
+    //Facebook sdk
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
+     	....
+        ....
+    
+}
+```
 ## Frequently asked questions
 
 ### Why Xcode is not building my iOS platform?
