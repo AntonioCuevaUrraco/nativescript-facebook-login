@@ -96,7 +96,7 @@ application android:label="@string/app_name" ...>
           android:label="@string/app_name" />
 </application>
 ```
-Add to your Strings (platforms>android>src>main>res>strings.xml) your facebook app id
+Add to your Strings (platforms/android/src/main/res/values/strings.xml) your facebook app id
 ```xml
 <string name="facebook_app_id">your-app-id</string>
 ```
