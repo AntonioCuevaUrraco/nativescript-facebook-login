@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FacebookLoginDemo</string>
+    <string name="title_activity_kimera">FacebookLoginDemo</string>
+        <string name="facebook_app_id">1234567890</string>
+
+</resources>
