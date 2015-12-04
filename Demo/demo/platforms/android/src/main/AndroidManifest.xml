@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.nativescript.demo"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+   <supports-screens
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true"/>
+	
+   <uses-sdk
+        android:minSdkVersion="17"
+		android:targetSdkVersion="23"/>
+    
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    
+    <application
+        
+        android:name="com.tns.NativeScriptApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+		<activity
+            android:name="com.tns.NativeScriptActivity"
+            android:label="@string/title_activity_kimera"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+            
+             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.tns.ErrorReportActivity"/>
+        <activity android:name="com.tns.ErrorReportActivity"/>
+         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <activity 
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:label="@string/app_name" 
+         />
+
+    </application>
+
+</manifest>

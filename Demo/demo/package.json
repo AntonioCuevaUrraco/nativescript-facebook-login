@@ -1,0 +1,15 @@
+{
+  "nativescript": {
+    "id": "org.nativescript.demo",
+    "tns-android": {
+      "version": "1.5.0"
+    },
+    "tns-ios": {
+      "version": "1.5.0"
+    }
+  },
+  "dependencies": {
+    "nativescript-facebook-login": "file:../../../nativescript-facebook-login/plugin",
+    "tns-core-modules": "1.5.0"
+  }
+}
