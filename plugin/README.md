@@ -65,19 +65,29 @@ application.start();
 
 Add to your Info.plist(the one inside platforms/ios/yourApp) the Facebook App ID credentials 
 ```xml
+
 <key>CFBundleURLTypes</key>
-<array>
-  <dict>
-    <key>CFBundleURLSchemes</key>
-    <array>
-      <string>fb{your-app-id}</string>
-    </array>
-  </dict>
-</array>
-<key>FacebookAppID</key>
-<string>{your-app-id}</string>
-<key>FacebookDisplayName</key>
-<string>{your-app-name}</string>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+        <string>fb{your-app-id}</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	<key>FacebookAppID</key>
+  <string>{your-app-id}</string>
+	<key>FacebookDisplayName</key>
+	<string>FacebookLoginDemo</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbauth2</string>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbshareextension</string>
+	</array>
 ```
 For more information you can consult the official Facebook page for iOS
 https://developers.facebook.com/docs/ios
@@ -111,32 +121,69 @@ var FacebookLoginHandler = require("nativescript-facebook-login");
 ```
 Create the callbacks to handle the result of the login
 ```ts
-var successCallback = function(result) {
-    
-  //Do something with the result, for example get the AccessToken
-    var token;
-    if (topmost().android){
-      token = result.getAccessToken().getToken();
-       }
-    else if (topmost().ios){
-      token = result.token.tokenString
-    }
-}
-var cancelCallback = function() {
-    alert("Login was cancelled");
-  }
-  
-var failCallback = function() {
-    alert("Unexpected error: Cannot get access token");
-  }  
+ var successCallback = function(result) {
+            //Do something with the result, for example get the AccessToken
+            var token;
+            if (topmost().android){
+              token = result.getAccessToken().getToken();
+            }
+            else if (topmost().ios){
+              token = result.token.tokenString
+            }
+            alert(token);
+        }
+
+        var cancelCallback = function() {
+            alert("Login was cancelled");
+        }
+
+        var failCallback = function(error) {
+            var errorMessage = "Error with Facebook";
+           //Try to get as much information as possible from error
+           if (error) {
+                if (topmost().ios) {
+                    if (error.localizedDescription) {
+                        errorMessage += ": " + error.localizedDescription;
+                    }
+                    else if (error.code) {
+                        errorMessage += ": Code " + error.code;
+                    }
+                    else {
+                        errorMessage += ": " + error;   
+                    }
+                }
+                else if (topmost().android) {
+                    if (error.getErrorMessage) {
+                        errorMessage += ": " + error.getErrorMessage();
+                    }
+                    else if (error.getErrorCode) {
+                        errorMessage += ": Code " + error.getErrorCode();
+                    }
+                    else {
+                        errorMessage += ": " + error;   
+                    }
+                }
+            }
+            alert(errorMessage);
+        }  
 ```
 
 And finally you can start the login process like this
 ```ts
-  FacebookLoginHandler.init();
-  FacebookLoginHandler.registerCallback(successCallback, cancelCallback, failCallback);
-  //Ask for the permissions you want to use
-  FacebookLoginHandler.logInWithPublishPermissions(["publish_actions"]);
+  //Here we select the login behaviour
+
+    //Recomended system account with native fallback for iOS
+    if (topmost().ios) {
+        FacebookLoginHandler.init(2);
+    }
+    //Recomended default for android 
+    else if (topmost().android) {
+        FacebookLoginHandler.init();
+    }
+    //Register our callbacks
+    FacebookLoginHandler.registerCallback(successCallback, cancelCallback, failCallback);
+    //Start the login process
+    FacebookLoginHandler.logInWithPublishPermissions(["publish_actions"]);      
 ```
 
 ## Known issues
@@ -144,7 +191,17 @@ Sometimes the .aar library with the sdk for android don't get linked to the plat
 TypeError: Cannot read property 'FacebookSdk' of undefined
 File: "/data/data/com.ladeezfirstmedia.ThisOrThat/files/app/tns_modules/nativescript-facebook-login/facebook-handler.js line: 9 column:16   
 
-As a workarround for now till the cause is found you can add the facebook sdk dependency manually by changing the build.gradle (platforms/android/build.gradle) like so:
+You can try to sync the platform
+tns livesync android
+
+You can try cleaning the platform.
+-remove the plugin
+-remove the platform
+-add the plugin
+-add the platform in that order 
+
+You can try to add manually the dependency
+change the build.gradle (platforms/android/build.gradle) like this:
 ```
 dependencies {
 	....
