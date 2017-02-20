@@ -1,5 +1,5 @@
 //NativeScript modules
-import applicationModule = require("application");
+import * as applicationModule from "application";
 
 var _isInit: boolean = false;
 
@@ -7,7 +7,7 @@ var mCallbackManager;
 var loginManager;
 
 
-export function init(loginBehavior? : any): boolean { 
+export function init(loginBehavior? : any): boolean {
     //fb initialization
   loginManager = FBSDKLoginManager.alloc().init();
 
@@ -29,11 +29,11 @@ export function init(loginBehavior? : any): boolean {
 export function registerCallback(successCallback: any, cancelCallback: any, failCallback: any) {
     if (_isInit) {
       mCallbackManager= function(result: FBSDKLoginManagerLoginResult, error: NSError) {
-        
+
         if (error) {
           failCallback(error);
           return;
-        } 
+        }
         //something went really wrong no error and no result
         if (!result) {
           failCallback("Null error");

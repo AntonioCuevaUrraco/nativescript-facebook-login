@@ -2,7 +2,7 @@
   "name": "nativescript-facebook-login",
   "version": "0.2.0",
   "description": "A NativeScript module providing Facebook login for Android and iOS",
-  "main": "facebook-handler.js",
+  "main": "facebook-handler",
   "nativescript": {
     "platforms": {
       "android": "1.3.0",

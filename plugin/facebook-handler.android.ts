@@ -1,5 +1,5 @@
 //NativeScript modules
-import applicationModule = require("application");
+import * as applicationModule from "application";
 
 var _isInit: boolean = false;
 var _AndroidApplication = applicationModule.android;
