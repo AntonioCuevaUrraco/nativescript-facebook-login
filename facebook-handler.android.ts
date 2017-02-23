@@ -56,10 +56,17 @@ export function registerCallback(successCallback: any, cancelCallback: any, fail
 
       }));
 
-      //Overriding Activity onActivityResult method to send it to the callbackManager
-      act.onActivityResult = (requestCode: number, resultCode: number, data: android.content.Intent) => {
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
-      }
+      var onActivityResult = (args) => {
+        if (mCallbackManager.onActivityResult(args.requestCode, args.resultCode, args.intent)) {
+          unsubscribe();
+        }
+      };
+
+      var unsubscribe = () => {
+        _AndroidApplication.off(applicationModule.AndroidApplication.activityResultEvent, onActivityResult);
+      };
+
+      _AndroidApplication.on(applicationModule.AndroidApplication.activityResultEvent, onActivityResult);
     }
   }
 
